@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import ChatHeader from "./ChatHeader";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
+import { Spinner } from 'react-bootstrap';  // Install react-bootstrap for spinner
+import { toast } from 'react-toastify';  // Install react-toastify for notifications
 
 const ChatWindow = ({ recipient }) => {
     const [messages, setMessages] = useState([]);
@@ -64,19 +66,15 @@ const ChatWindow = ({ recipient }) => {
     
         fetchMessages();
     }, [recipient]);
-    
 
     // Handle sending a message
     const handleSendMessage = async (messageObject) => {
-        // Check if we received a complete message object (from the API response)
         if (messageObject && messageObject._id) {
             console.log("✅ Adding new message directly to UI:", messageObject);
-            // Simply add the received message object to the UI
             addNewMessage(messageObject);
             return;
         }
         
-        // Handle case where we just received message text (backward compatibility)
         const messageText = messageObject;
         
         if (!userId || !recipient || !recipient._id || !messageText) {
@@ -108,17 +106,18 @@ const ChatWindow = ({ recipient }) => {
                 const errorData = await response.json();
                 console.error("❌ Failed to send message:", errorData);
                 setError(errorData.message || "Failed to send message");
+                toast.error('Error sending message. Please try again.');
                 return;
             }
     
             const result = await response.json();
             console.log("✅ Message sent:", result.data);
-    
-            // Add the new message to the UI (preventing duplicates)
             addNewMessage(result.data);
+            toast.success('Message sent!');
         } catch (error) {
             console.error("❌ Error sending message:", error);
             setError("Network error while sending message");
+            toast.error('Network error. Please try again.');
         }
     };
 
@@ -159,7 +158,32 @@ const ChatWindow = ({ recipient }) => {
             textAlign: "center",
             padding: "20px",
             fontSize: "18px"
-        }
+        },
+        messageBubble: {
+            maxWidth: "75%",
+            padding: "10px 15px",
+            borderRadius: "20px",
+            marginBottom: "10px",
+            display: "inline-block",
+            wordBreak: "break-word",
+            fontSize: "14px",
+        },
+        sentMessage: {
+            backgroundColor: "#7289DA",
+            alignSelf: "flex-end",
+            color: "white",
+        },
+        receivedMessage: {
+            backgroundColor: "#2C2F33",
+            color: "white",
+        },
+        messageInputWrapper: {
+            position: "sticky",
+            bottom: 0,
+            backgroundColor: "#36393F",
+            padding: "10px",
+            zIndex: 10,
+        },
     };
 
     return (
@@ -168,11 +192,12 @@ const ChatWindow = ({ recipient }) => {
             <div style={styles.chatContent}>
                 {!recipient && (
                     <div style={styles.noRecipient}>
-                        <p>Select a recipient to start chatting</p>
+                        <p></p>
                     </div>
                 )}
                 {loading && (
                     <div style={styles.loading}>
+                        <Spinner animation="border" variant="light" />
                         <p>Loading messages...</p>
                     </div>
                 )}
@@ -183,7 +208,11 @@ const ChatWindow = ({ recipient }) => {
                 )}
                 {!loading && !error && recipient && <MessageList messages={messages} />}
             </div>
-            {recipient && <MessageInput recipient={recipient} onSendMessage={handleSendMessage} />}
+            {recipient && (
+                <div style={styles.messageInputWrapper}>
+                    <MessageInput recipient={recipient} onSendMessage={handleSendMessage} />
+                </div>
+            )}
         </div>
     );
 };

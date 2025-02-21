@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Components/Login";
 import Signup from "./Components/Signup";
 import ChatPage from "./Components/ChatPage";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function App() {
   return (

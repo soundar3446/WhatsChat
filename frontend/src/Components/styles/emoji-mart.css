@@ -1,0 +1,101 @@
+/* Custom emoji-mart picker styles */
+
+/* Wrapper for the emoji picker */
+.emoji-mart {
+    position: relative;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 10px;
+    display: block;
+}
+
+/* Emoji search bar styling */
+.emoji-mart-search {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.emoji-mart-search input {
+    width: 80%;
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    outline: none;
+}
+
+/* Container for emojis */
+.emoji-mart-emoji {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-gap: 8px;
+    max-height: 200px;
+    overflow-y: scroll;
+    padding: 5px;
+}
+
+/* Emoji image styling */
+.emoji-mart-emoji img {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.emoji-mart-emoji img:hover {
+    transform: scale(1.2);
+}
+
+/* Emoji category tabs */
+.emoji-mart-tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.emoji-mart-tabs button {
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease;
+}
+
+.emoji-mart-tabs button:hover {
+    background-color: #eaeaea;
+    border-radius: 5px;
+}
+
+.emoji-mart-tabs button.active {
+    color: #7289da;
+    font-weight: bold;
+    transition: color 0.3s ease, font-weight 0.3s ease;
+}
+
+/* Custom scroll styles */
+.emoji-mart-emoji::-webkit-scrollbar {
+    width: 6px;
+}
+
+.emoji-mart-emoji::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 6px;
+}
+
+.emoji-mart-emoji::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+    .emoji-mart-emoji {
+        grid-template-columns: repeat(4, 1fr); /* Adjust grid columns on small screens */
+    }
+}

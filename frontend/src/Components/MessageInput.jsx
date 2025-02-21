@@ -4,6 +4,7 @@ const MessageInput = ({ recipient, onSendMessage }) => {
     const [message, setMessage] = useState("");
     const [isSending, setIsSending] = useState(false);
     const [error, setError] = useState(null);
+    const [isHovered, setIsHovered] = useState(false);  // State for hover effect
 
     const handleSend = useCallback(async () => {
         console.log("📥 Message to send:", message);
@@ -20,49 +21,42 @@ const MessageInput = ({ recipient, onSendMessage }) => {
             return;
         }
 
-        // ✅ Retrieve user details from localStorage
+        // Retrieve user details from localStorage
         const storedUser = JSON.parse(localStorage.getItem("user")) || {};
         const senderId = localStorage.getItem("userId") || storedUser._id;
         const senderPhone = localStorage.getItem("phoneNumber") || storedUser.phoneNumber;
 
-        // ✅ If senderPhone is still missing, log a clear error and stop execution
         if (!senderId || !senderPhone) {
             console.error("🚨 Missing sender details in localStorage!");
-            console.log("📦 LocalStorage contents:", JSON.stringify(localStorage, null, 2));
             setError("⚠️ Sender details missing. Please log in again.");
             return;
         }
 
-
-        // ✅ Store sender phone number in localStorage (if missing)
+        // Store sender phone number in localStorage (if missing)
         if (!localStorage.getItem("phoneNumber")) {
             localStorage.setItem("phoneNumber", senderPhone);
         }
 
-        // ✅ Extract recipient phone number
         const recipientPhone = recipient.phone || recipient.phoneNumber;
 
-        // ✅ Data for storing chat (Uses IDs)
         const chatMessageData = {
             sender: senderId,
             receiver: recipient._id,
             content: message.trim(),
         };
 
-        // ✅ Data for sending WhatsApp message (Uses Phone Numbers)
         const whatsappMessageData = {
             sender: senderPhone,
             receiver: recipientPhone,
             content: message.trim(),
         };
 
-        const token = localStorage.getItem("token"); // ✅ Retrieve token
+        const token = localStorage.getItem("token");
         if (!token) {
             console.error("🚨 No token found! User may not be authenticated.");
             setError("⚠️ Authentication failed. Please log in again.");
             return;
         }
-
 
         console.log("📩 Sending chatMessageData:", JSON.stringify(chatMessageData, null, 2));
         console.log("📩 Sending whatsappMessageData:", JSON.stringify(whatsappMessageData, null, 2));
@@ -71,7 +65,6 @@ const MessageInput = ({ recipient, onSendMessage }) => {
             setIsSending(true);
             setError(null);
 
-            // ✅ Send message to chat API (Storing Conversation)
             const chatResponse = await fetch("http://localhost:5000/api/messages/send", {
                 method: "POST",
                 headers: {
@@ -89,7 +82,6 @@ const MessageInput = ({ recipient, onSendMessage }) => {
             const chatData = await chatResponse.json();
             console.log("✅ Message stored in chat successfully:", chatData);
 
-            // ✅ Send message to WhatsApp API (Sending Message via Baileys)
             const whatsappResponse = await fetch("http://localhost:5000/api/messages/send-whatsapp", {
                 method: "POST",
                 headers: {
@@ -107,10 +99,7 @@ const MessageInput = ({ recipient, onSendMessage }) => {
 
             console.log("📤 Message sent to WhatsApp!");
 
-            // ✅ Update UI with the sent message
             onSendMessage(chatData.data);
-
-            // ✅ Clear the input field
             setMessage("");
 
         } catch (error) {
@@ -121,7 +110,6 @@ const MessageInput = ({ recipient, onSendMessage }) => {
         }
     }, [message, recipient, onSendMessage]);
 
-    // ✅ Send message on "Enter" key press
     const handleKeyPress = (e) => {
         if (e.key === "Enter" && !isSending) {
             handleSend();
@@ -131,11 +119,13 @@ const MessageInput = ({ recipient, onSendMessage }) => {
     return (
         <div
             style={{
-                padding: "10px",
+                padding: "12px",
                 backgroundColor: "#2C2F33",
                 display: "flex",
                 alignItems: "center",
-                gap: "10px",
+                gap: "15px",
+                borderRadius: "8px",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
             }}
         >
             <input
@@ -147,25 +137,31 @@ const MessageInput = ({ recipient, onSendMessage }) => {
                 style={{
                     flex: 1,
                     padding: "12px",
-                    borderRadius: "6px",
-                    border: "none",
+                    borderRadius: "20px",
+                    border: "1px solid #3A3F47",
                     fontSize: "16px",
                     color: "white",
                     backgroundColor: "#3A3F47",
+                    transition: "border-color 0.3s ease",
                 }}
+                onFocus={(e) => e.target.style.borderColor = "#7289DA"}
+                onBlur={(e) => e.target.style.borderColor = "#3A3F47"}
             />
             <button
                 onClick={handleSend}
                 disabled={isSending || !message.trim()}
+                onMouseEnter={() => !isSending && setIsHovered(true)}  // Set hover state
+                onMouseLeave={() => !isSending && setIsHovered(false)} // Reset hover state
                 style={{
                     padding: "12px 18px",
-                    backgroundColor: isSending || !message.trim() ? "#5865F2" : "#7289DA",
+                    backgroundColor: isSending || !message.trim() ? "#5865F2" : (isHovered ? "#5a72b1" : "#7289DA"),
                     border: "none",
                     borderRadius: "8px",
                     color: "white",
                     fontSize: "16px",
                     fontWeight: "bold",
                     cursor: isSending || !message.trim() ? "not-allowed" : "pointer",
+                    transition: "background-color 0.3s ease",
                 }}
             >
                 {isSending ? "Sending..." : "Send"}

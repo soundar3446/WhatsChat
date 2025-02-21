@@ -57,31 +57,104 @@ const Login = () => {
     };
    
     const styles = {
-        pageContainer: { 
-            display: "flex", justifyContent: "center", alignItems: "center", 
-            height: "100vh", backgroundColor: "#23272A", color: "#fff"
+        pageContainer: {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh", /* Full viewport height */
+            width: "100vw", /* Full viewport width */
+            backgroundColor: "#23272A",
+            color: "#fff",
+            backgroundImage: "url('https://www.w3schools.com/w3images/forestbridge.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            position: "relative",
+            overflow: "hidden",
         },
-        formContainer: { 
-            backgroundColor: "#2C2F33", padding: "40px", borderRadius: "10px",
-            boxShadow: "0px 4px 10px rgba(0,0,0,0.3)", width: "350px"
+        modalOverlay: {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            zIndex: 1,
         },
-        input: { 
-            backgroundColor: "#40444B", border: "none", color: "#fff",
-            marginBottom: "10px", padding: "10px", borderRadius: "5px"
+        formContainer: {
+            backgroundColor: "#2C2F33",
+            padding: "40px",
+            borderRadius: "10px",
+            boxShadow: "0px 4px 20px rgba(0,0,0,0.3)",
+            width: "90%", /* Adjust width to fit screen */
+            maxWidth: "500px", /* Prevent overflow on large screens */
+            boxSizing: "border-box", /* Ensure padding is within width */
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            zIndex: 2,
+            position: "relative",
         },
-        button: { 
-            backgroundColor: "#5865F2", border: "none", padding: "10px",
-            color: "#fff", fontWeight: "bold", borderRadius: "5px", width: "100%",
-            cursor: "pointer"
+        input: {
+            backgroundColor: "#40444B",
+            border: "none",
+            color: "#fff",
+            marginBottom: "15px",
+            padding: "12px",
+            borderRadius: "8px",
+            fontSize: "16px",
+            transition: "border-color 0.3s ease",
         },
-        link: { color: "#00AFF4", textDecoration: "none" }
+        inputFocus: {
+            borderColor: "#5865F2",
+            boxShadow: "0 0 0 2px rgba(88,101,242,0.5)"
+        },
+        button: {
+            backgroundColor: "#5865F2",
+            border: "none",
+            padding: "12px",
+            color: "#fff",
+            fontWeight: "bold",
+            borderRadius: "8px",
+            width: "100%",
+            cursor: "pointer",
+            transition: "background-color 0.3s ease"
+        },
+        buttonHover: {
+            backgroundColor: "#4752C4"
+        },
+        link: {
+            color: "#00AFF4",
+            textDecoration: "none",
+            fontWeight: "500",
+            fontSize: "14px"
+        },
+        errorMessage: {
+            color: "#ff4d4d",
+            backgroundColor: "#ffcccc",
+            padding: "10px",
+            marginBottom: "15px",
+            borderRadius: "5px",
+            textAlign: "center"
+        }
+    };
+    
+    
+
+    const handleInputFocus = (e) => {
+        e.target.style.borderColor = "#5865F2";
+        e.target.style.boxShadow = "0 0 0 2px rgba(88,101,242,0.5)";
+    };
+
+    const handleInputBlur = (e) => {
+        e.target.style.borderColor = "#40444B";
+        e.target.style.boxShadow = "none";
     };
 
     return (
         <div style={styles.pageContainer}>
+            <div style={styles.modalOverlay}></div>
             <div style={styles.formContainer}>
-                <h3 className="text-center mb-4">Welcome Back</h3>
-                {error && <div className="alert alert-danger">{error}</div>}
+                <h3 className="text-center mb-4" style={{ fontSize: "24px", fontWeight: "600", color: "#fff" }}>Welcome Back</h3>
+                {error && <div style={styles.errorMessage}>{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <input 
                         type="text" 
@@ -90,6 +163,8 @@ const Login = () => {
                         placeholder="Phone Number" 
                         style={styles.input} 
                         onChange={handleChange} 
+                        onFocus={handleInputFocus} 
+                        onBlur={handleInputBlur}
                         required 
                     />
                     <input 
@@ -99,11 +174,23 @@ const Login = () => {
                         placeholder="Password" 
                         style={styles.input} 
                         onChange={handleChange} 
+                        onFocus={handleInputFocus} 
+                        onBlur={handleInputBlur}
                         required 
                     />
-                    <button type="submit" className="btn" style={styles.button}>Login</button>
+                    <button 
+                        type="submit" 
+                        className="btn" 
+                        style={styles.button}
+                        onMouseOver={(e) => e.target.style.backgroundColor = styles.buttonHover.backgroundColor} 
+                        onMouseOut={(e) => e.target.style.backgroundColor = styles.button.backgroundColor}
+                    >
+                        Login
+                    </button>
                 </form>
-                <p className="text-center mt-3">Don't have an account? <a href="/signup" style={styles.link}>Sign up</a></p>
+                <p className="text-center mt-3" style={{ color: "#fff" }}>
+                    Don't have an account? <a href="/signup" style={styles.link}>Sign up</a>
+                </p>
             </div>
         </div>
     );
