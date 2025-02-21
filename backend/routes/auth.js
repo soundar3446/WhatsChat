@@ -65,9 +65,11 @@ router.post("/login", async (req, res) => {
             token,
             user: {
                 _id: user._id,
-                name: user.name
+                name: user.name,  // ✅ Make sure there's a comma here!
+                phoneNumber: user.phoneNumber // ✅ Now correctly formatted
             }
         });
+        ;
     } catch (error) {
         console.error("Login failed:", error);
         res.status(500).json({ error: "Login failed" });

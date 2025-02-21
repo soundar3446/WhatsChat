@@ -28,12 +28,18 @@ const initializeWhatsAppClient = async () => {
     return whatsappClient;
 };
 
-// Function to send a WhatsApp message
-const sendWhatsAppMessage = async (recipient, message) => {
+// ✅ Updated Function to Send WhatsApp Messages
+const sendWhatsAppMessage = async (sender, receiver, message) => {
     if (!whatsappClient) throw new Error("❌ WhatsApp client not initialized");
 
-    await whatsappClient.sendMessage(`${recipient}@s.whatsapp.net`, { text: message });
-    console.log(`📩 Message sent to ${recipient}: ${message}`);
+    // Ensure sender & receiver numbers are properly formatted
+    const senderNumber = sender.trim();
+    const receiverNumber = receiver.trim();
+
+    console.log(`📩 Sending WhatsApp message from ${senderNumber} to ${receiverNumber}: "${message}"`);
+
+    await whatsappClient.sendMessage(`${receiverNumber}@s.whatsapp.net`, { text: message });
+    console.log(`✅ Message successfully sent to ${receiverNumber}`);
 };
 
 // Export both functions

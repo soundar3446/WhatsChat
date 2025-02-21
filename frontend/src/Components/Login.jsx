@@ -13,28 +13,38 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
-   
+    
         console.log("Sending login request with:", formData); // Debugging
-   
+    
         try {
             const response = await fetch("http://localhost:5000/api/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
-   
+    
             const data = await response.json();
             console.log("Response received:", data); // Debugging
-   
+    
             if (!response.ok) {
                 throw new Error(data.error || "Login failed");
             }
-   
-            // Check if user data exists before accessing _id
+    
+            // ✅ Store full user data
             if (data.user && data.user._id) {
-                // Store token and userId for authentication
-                localStorage.setItem("token", data.token); // Store token for authentication
-                localStorage.setItem("userId", data.user._id); // Store user ID
+                const user = {
+                    _id: data.user._id,
+                    name: data.user.name || "Unknown",
+                    phoneNumber: data.user.phoneNumber,
+                };
+    
+                // ✅ Store token, user ID, and full user object
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("userId", user._id);
+                localStorage.setItem("phoneNumber", user.phoneNumber);
+                localStorage.setItem("user", JSON.stringify(user)); // Store full user object
+    
+                console.log("📦 User stored in localStorage:", user);
                 alert("Login successful!");
                 navigate("/chat"); // Redirect to chat page
             } else {
